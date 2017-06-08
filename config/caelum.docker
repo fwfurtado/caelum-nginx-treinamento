@@ -1,0 +1,30 @@
+upstream backend {
+    server a.treinamento.com.br:8080;
+    server b.treinamento.com.br:8080;
+    server c.treinamento.com.br:8080;
+
+    server d.treinamento.com.br:8080 backup;
+}
+
+server {
+    listen 80 default_server;
+
+    return 301 https://$NGINX_HOST:$NGINX_HTTPS_PORT$request_uri;
+}
+
+
+server {
+
+    listen 443 ssl http2;
+
+    ssl_certificate /etc/nginx/ssl/cert.crt;
+    ssl_certificate_key /etc/nginx/ssl/cert.key;
+
+    location / {
+        proxy_pass http://backend;
+
+        gzip on;
+        gzip_types application/json application/text;
+        gzip_min_length 100;
+    }
+}

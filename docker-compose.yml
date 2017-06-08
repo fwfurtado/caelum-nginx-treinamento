@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  database:
+    image: mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+  proxy:
+    image: treinamento/caelum-nginx
+    # command: ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/conf.d/caelum.conf"]
+    volumes:
+      - ./config/:/etc/nginx/conf.d/
+      - ./ssl/:/etc/nginx/ssl/
+    ports:
+      - "8080:80"
+      - "8081:443"
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_HTTPS_PORT=8081
+    depends_on:
+      - a.treinamento.com.br
+      - b.treinamento.com.br
+    restart: on-failure
+  a.treinamento.com.br:
+    image: treinamentos/rest-api
+    environment:
+      - database-url=database
+    depends_on:
+      - database
+    restart: on-failure
+  b.treinamento.com.br:
+    image: treinamentos/rest-api
+    environment:
+      - database-url=database
+    depends_on:
+      - database
+    restart: on-failure
+  c.treinamento.com.br:
+    image: treinamentos/rest-api
+    environment:
+      - database-url=database
+    depends_on:
+      - database
+    restart: on-failure
+  d.treinamento.com.br:
+    image: treinamentos/rest-api
+    environment:
+      - database-url=database
+    depends_on:
+      - database
+    restart: on-failure    
